@@ -12,7 +12,7 @@ namespace ServerCore
     //TODO : 
     // 1.registerSend()를 할 때나 receive할 때 내가 어느정도 보냈는지를 추적해서 너무 양이 많으면 쉬어주는 처리 필요
     // DDos같이 무의미한 데이터가 계속 들어오면 receive할 때 체크해서 disconnect 해줘야함
-    abstract class Session
+    public abstract class Session
     {
         Socket _socket;
         int _disconnected = 0;
