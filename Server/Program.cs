@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -7,14 +8,34 @@ using ServerCore;
 
 namespace Server
 {
+    class Packet
+    {
+        public ushort size;
+        public ushort packetId;
+    }
+
+    class LoginOKPacket : Packet
+    { 
+    
+    
+    }
+
     class GameSession : Session
     {
         public override void OnConnected(EndPoint endPoint)
         {
             Console.WriteLine($"OnConnected : {endPoint}");
 
-            byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server!");
-            Send(sendBuff);
+            Packet packet = new Packet() { size = 100, packetId = 10 };
+
+            ArraySegment<byte> openSegment = SendBufferHelper.Open(4096);
+            byte[] buffer = BitConverter.GetBytes(packet.size);
+            byte[] buffer2 = BitConverter.GetBytes(packet.packetId);
+            Array.Copy(buffer, 0, openSegment.Array, openSegment.Offset, buffer.Length);
+            Array.Copy(buffer2, 0, openSegment.Array, openSegment.Offset + buffer.Length, buffer2.Length);
+            ArraySegment<byte> sendBuffer= SendBufferHelper.Close(buffer.Length + buffer2.Length);
+
+            Send(sendBuffer);
             Thread.Sleep(1000);
             Disconnect();
         }
